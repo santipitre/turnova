@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Iniciar sesión · Turnova by Pyralis</title>
+<meta name="description" content="Acceso a Turnova — Turnos médicos asignados por IA · by Pyralis" />
+<meta name="theme-color" content="#0A0F14" />
+
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --pyralis-bg:           #0A0F14;
+  --pyralis-surface:      #111922;
+  --pyralis-border:       #1F2937;
+  --pyralis-text:         #F1F5F9;
+  --pyralis-text-muted:   #94A3B8;
+  --pyralis-text-dim:     #64748B;
+  --pyralis-firefly:      #F59E0B;
+  --accent-turnova:       #A78BFA;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--pyralis-bg);
+  color: var(--pyralis-text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-weight: 400;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; background: none; border: none; color: inherit; cursor: pointer; }
+
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(167, 139, 250, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167, 139, 250, 0.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+.bg-glow {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(
+    ellipse 600px 500px at center 35%,
+    rgba(245, 158, 11, 0.12) 0%,
+    rgba(167, 139, 250, 0.06) 30%,
+    transparent 60%
+  );
+}
+
+.shell {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 32px 24px;
+}
+
+.back-link {
+  position: absolute; top: 24px; left: 24px;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--pyralis-text-dim);
+  padding: 8px 14px; border-radius: 6px;
+  border: 0.5px solid var(--pyralis-border);
+  background: rgba(255, 255, 255, 0.02);
+  transition: color 0.15s, border-color 0.15s;
+}
+.back-link:hover { color: var(--pyralis-text); border-color: rgba(167, 139, 250, 0.4); }
+
+.brand {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 36px;
+}
+.brand svg { display: block; flex-shrink: 0; }
+.brand-text { display: flex; flex-direction: column; gap: 4px; line-height: 1; }
+.brand-name { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+.brand-name .firefly-o { color: var(--pyralis-firefly); font-weight: 600; }
+.brand-by { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--pyralis-text-dim); font-weight: 500; }
+
+.card {
+  width: 100%; max-width: 440px;
+  background: var(--pyralis-surface);
+  border: 0.5px solid var(--pyralis-border);
+  border-radius: 16px;
+  padding: 40px 36px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+.card h1 {
+  font-size: 22px; font-weight: 600; letter-spacing: -0.015em;
+  margin-bottom: 8px;
+}
+.card .sub {
+  font-size: 14px; color: var(--pyralis-text-muted);
+  line-height: 1.55;
+  margin-bottom: 28px;
+}
+
+.field { margin-bottom: 16px; }
+.field label {
+  display: block; font-size: 12px; font-weight: 500;
+  color: var(--pyralis-text-muted); margin-bottom: 6px;
+  letter-spacing: 0.04em;
+}
+.field input {
+  width: 100%; padding: 11px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 0.5px solid var(--pyralis-border);
+  border-radius: 8px;
+  color: var(--pyralis-text);
+  font-family: inherit; font-size: 14px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.field input:focus {
+  outline: none;
+  border-color: var(--accent-turnova);
+  background: rgba(167, 139, 250, 0.04);
+}
+.field input::placeholder { color: var(--pyralis-text-dim); }
+
+.btn-submit {
+  width: 100%; padding: 13px;
+  background: var(--accent-turnova); color: #0A0F14;
+  border-radius: 8px;
+  font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  margin-top: 8px;
+  box-shadow: 0 4px 16px rgba(167, 139, 250, 0.2);
+}
+.btn-submit:hover { background: #C4B5FD; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(167, 139, 250, 0.4); }
+
+.beta-banner {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 12px 14px;
+  background: rgba(167, 139, 250, 0.08);
+  border: 0.5px solid rgba(167, 139, 250, 0.2);
+  border-radius: 8px;
+  margin-bottom: 24px;
+  font-size: 12px; line-height: 1.55;
+  color: var(--pyralis-text-muted);
+}
+.beta-banner::before {
+  content: ''; flex-shrink: 0;
+  width: 8px; height: 8px; border-radius: 50%; margin-top: 5px;
+  background: var(--accent-turnova);
+  box-shadow: 0 0 8px var(--accent-turnova);
+}
+
+.foot {
+  margin-top: 24px; text-align: center;
+  font-size: 12px; color: var(--pyralis-text-dim);
+}
+.foot a { color: var(--accent-turnova); }
+.foot a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div class="shell">
+  <a href="index.html" class="back-link">← volver</a>
+
+  <div class="brand">
+    <svg width="56" height="56" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-label="Turnova by Pyralis">
+      <rect x="3" y="3" width="54" height="54" rx="13" fill="#0A0F14" stroke="#1F2937" stroke-width="0.8"/>
+      <path d="M14 14 L46 14 M30 14 L30 46" fill="none" stroke="#F1F5F9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="40" cy="34" r="9" fill="none" stroke="#F59E0B" stroke-width="0.6" opacity="0.4"/>
+      <circle cx="40" cy="34" r="4" fill="#F59E0B"/>
+      <circle cx="40" cy="34" r="1.8" fill="#FEF3C7"/>
+    </svg>
+    <div class="brand-text">
+      <span class="brand-name">Turn<span class="firefly-o">o</span>va</span>
+      <span class="brand-by">By Pyralis</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h1>Iniciar sesión</h1>
+    <p class="sub">Acceso para clientes Turnova. Si todavía no tenés cuenta, escribinos.</p>
+
+    <div class="beta-banner">
+      <div>
+        <strong style="color: var(--pyralis-text);">Beta privada.</strong>
+        Turnova está en lanzamiento controlado. Si recibiste credenciales, ingresá. Si querés probar, <a href="mailto:hola@pyralis.ar?subject=Quiero%20probar%20Turnova" style="color: var(--accent-turnova);">solicitá acceso acá</a>.
+      </div>
+    </div>
+
+    <form onsubmit="event.preventDefault(); alert('App Turnova en deploy — próximamente. Pedí acceso a hola@pyralis.ar mientras tanto.');">
+      <div class="field">
+        <label for="user">Usuario</label>
+        <input id="user" type="text" placeholder="tu_usuario" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label for="pin">PIN</label>
+        <input id="pin" type="password" placeholder="••••" autocomplete="current-password" />
+      </div>
+      <button type="submit" class="btn-submit">Entrar a Turnova</button>
+    </form>
+
+    <div class="foot">
+      ¿Olvidaste tu PIN? <a href="mailto:hola@pyralis.ar?subject=Reset%20PIN%20Turnova">Pedir reset</a>
+    </div>
+  </div>
+
+  <div style="margin-top: 32px; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--pyralis-text-dim);">
+    Una app del ecosistema <a href="https://santipitre.github.io/pyralis/" style="color: var(--accent-turnova); font-weight: 500;">Pyralis</a>
+  </div>
+</div>
+
+</body>
+</html>
