@@ -27,10 +27,14 @@
   button { font: inherit; background: none; border: none; color: inherit; cursor: pointer; }
 </style>
 
-<!-- Turnova Auth: login PIN + control de licencias (Supabase compartido con Lumen + Dictom) -->
+<!-- Turnova Auth + App: SPA con vistas operativas (Pedidos, Cupos, Turnos, Catálogos, Centro)
+     Conectada a Supabase Lumen (schema turnova.*) via Accept-Profile header. -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<script src="turnova-auth.js" defer></script>
+<script src="turnova-auth.js?v=2" defer></script>
 </head>
 <body>
+<!-- El auth se inyecta como overlay full-screen al cargar.
+     Si no hay sesión → login. Si hay sesión → app con sidebar.
+     Vistas: dashboard, pedidos, turnos, cupos, catalogos, tenant -->
 </body>
 </html>
