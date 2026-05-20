@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Turnova — Turnos médicos asignados por IA · by Pyralis</title>
+<meta name="description" content="Turnova lee pedidos médicos por WhatsApp con IA, identifica obra social y práctica, y asigna el turno automáticamente respetando reglas VIP y cupos semanales. Integración BOTMAKER nativa. Una app de Pyralis." />
+<meta name="theme-color" content="#0A0F14" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Turnova — Turnos médicos asignados por IA · by Pyralis" />
+<meta property="og:description" content="Cada turno, una nueva era. La IA que lee pedidos médicos por WhatsApp y asigna el turno por vos." />
+<meta property="og:url" content="https://santipitre.github.io/turnova/" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --pyralis-bg:           #0A0F14;
+  --pyralis-bg-soft:      #0E1521;
+  --pyralis-surface:      #111922;
+  --pyralis-border:       #1F2937;
+  --pyralis-border-strong:#2D3748;
+  --pyralis-firefly:      #F59E0B;
+  --pyralis-firefly-glow: #FEF3C7;
+  --pyralis-text:         #F1F5F9;
+  --pyralis-text-muted:   #94A3B8;
+  --pyralis-text-dim:     #64748B;
+  --accent-turnova:       #A78BFA;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--pyralis-bg);
+  color: var(--pyralis-text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-weight: 400;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; background: none; border: none; color: inherit; cursor: pointer; }
+ul { list-style: none; }
+
+.bg-layer { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(167, 139, 250, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167, 139, 250, 0.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+  background-position: center center;
+}
+.bg-glow {
+  background: radial-gradient(
+    ellipse 800px 600px at center 35%,
+    rgba(245, 158, 11, 0.15) 0%,
+    rgba(167, 139, 250, 0.08) 30%,
+    transparent 60%
+  );
+}
+
+/* Fireflies (luciérnagas amber) */
+.firefly {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FEF3C7 0%, #F59E0B 30%, transparent 70%);
+  box-shadow: 0 0 6px 1px rgba(245, 158, 11, 0.5), 0 0 14px 3px rgba(245, 158, 11, 0.25);
+  animation: drift 14s ease-in-out infinite;
+  opacity: 0;
+}
+.firefly:nth-child(1) { top: 18%; left: 12%; width: 4px; height: 4px; animation-delay: 0s; animation-duration: 16s; }
+.firefly:nth-child(2) { top: 28%; left: 78%; width: 3px; height: 3px; animation-delay: -3s; animation-duration: 18s; }
+.firefly:nth-child(3) { top: 55%; left: 85%; width: 5px; height: 5px; animation-delay: -7s; animation-duration: 13s; }
+.firefly:nth-child(4) { top: 72%; left: 8%; width: 3px; height: 3px; animation-delay: -10s; animation-duration: 17s; }
+.firefly:nth-child(5) { top: 40%; left: 50%; width: 4px; height: 4px; animation-delay: -5s; animation-duration: 15s; }
+.firefly:nth-child(6) { top: 85%; left: 60%; width: 3px; height: 3px; animation-delay: -12s; animation-duration: 19s; }
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); opacity: 0; }
+  10%, 90% { opacity: 0.85; }
+  50% { transform: translate(30px, -40px); opacity: 1; }
+}
+
+/* NAV */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  background: rgba(10, 15, 20, 0.8);
+  backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 0.5px solid var(--pyralis-border);
+}
+.nav-inner {
+  max-width: 1280px; margin: 0 auto;
+  padding: 0 24px; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { display: flex; align-items: center; gap: 10px; }
+.nav-brand svg { display: block; }
+.nav-brand-name { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.nav-links { display: flex; align-items: center; gap: 28px; }
+.nav-link {
+  font-size: 13px; color: var(--pyralis-text-muted);
+  transition: color 0.15s;
+}
+.nav-link:hover { color: var(--pyralis-text); }
+.nav-cta {
+  background: var(--accent-turnova); color: #0A0F14;
+  padding: 8px 16px; border-radius: 6px;
+  font-size: 13px; font-weight: 600;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.nav-cta:hover {
+  background: #C4B5FD;
+  box-shadow: 0 0 24px rgba(167, 139, 250, 0.4);
+}
+@media (max-width: 768px) {
+  .nav-link:not(.nav-cta) { display: none; }
+  .nav-links { gap: 12px; }
+}
+
+/* HERO */
+.hero {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  padding: 140px 24px 80px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 6px 14px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 0.5px solid rgba(167, 139, 250, 0.25);
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--pyralis-text-muted);
+  margin-bottom: 40px;
+}
+.hero-eyebrow::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent-turnova);
+  box-shadow: 0 0 8px var(--accent-turnova);
+}
+.hero-wordmark {
+  font-size: clamp(72px, 13vw, 168px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  margin-bottom: 12px;
+  color: var(--pyralis-text);
+}
+.hero-wordmark .firefly-o {
+  color: var(--pyralis-firefly);
+  font-weight: 600;
+  text-shadow:
+    0 0 20px rgba(245, 158, 11, 0.95),
+    0 0 42px rgba(245, 158, 11, 0.65),
+    0 0 80px rgba(245, 158, 11, 0.4);
+}
+.hero-byline {
+  font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--pyralis-text-dim);
+  margin-bottom: 36px;
+}
+.hero-byline .by-mark { margin: 0 6px; color: var(--pyralis-text-dim); }
+.hero-byline .pyralis { color: var(--pyralis-text-muted); font-weight: 500; letter-spacing: 0.05em; text-transform: none; font-size: 14px; }
+.hero-headline {
+  font-size: clamp(28px, 4.2vw, 44px);
+  font-weight: 600; letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin: 0 auto 24px;
+  max-width: 760px;
+}
+.hero-headline .accent { color: var(--accent-turnova); }
+.hero-sub {
+  font-size: clamp(16px, 1.6vw, 18px);
+  color: var(--pyralis-text-muted);
+  line-height: 1.6;
+  max-width: 640px; margin: 0 auto 44px;
+}
+.hero-ctas {
+  display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+  margin-bottom: 64px;
+}
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--accent-turnova); color: #0A0F14;
+  padding: 14px 28px; border-radius: 8px;
+  font-size: 15px; font-weight: 600;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+  box-shadow: 0 8px 32px rgba(167, 139, 250, 0.25);
+}
+.btn-primary:hover {
+  background: #C4B5FD;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 40px rgba(167, 139, 250, 0.4);
+}
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 0.5px solid var(--pyralis-border);
+  color: var(--pyralis-text);
+  padding: 14px 28px; border-radius: 8px;
+  font-size: 15px; font-weight: 500;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--pyralis-border-strong);
+}
+.hero-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 12px; max-width: 640px; width: 100%;
+}
+.stat {
+  padding: 18px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 0.5px solid var(--pyralis-border);
+  border-radius: 10px;
+  text-align: center;
+}
+.stat-value {
+  font-size: clamp(22px, 3vw, 28px); font-weight: 600;
+  color: var(--pyralis-firefly);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.stat-label {
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--pyralis-text-dim); margin-top: 6px; font-weight: 500;
+}
+
+/* SECTIONS */
+.section { padding: 100px 24px; position: relative; z-index: 1; }
+.section-inner { max-width: 1120px; margin: 0 auto; }
+.section-header { text-align: center; margin-bottom: 64px; }
+.section-eyebrow {
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent-turnova); margin-bottom: 12px; font-weight: 600;
+}
+.section h2 {
+  font-size: clamp(28px, 4vw, 42px); font-weight: 600; letter-spacing: -0.028em;
+  line-height: 1.15; margin-bottom: 14px;
+}
+.section-subtitle {
+  font-size: 17px; color: var(--pyralis-text-muted);
+  max-width: 620px; margin: 0 auto; line-height: 1.6;
+}
+
+/* FEATURES */
+.features-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+.feature-card {
+  background: var(--pyralis-surface);
+  border: 0.5px solid var(--pyralis-border);
+  border-radius: 14px;
+  padding: 28px 24px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.feature-card:hover {
+  border-color: rgba(167, 139, 250, 0.4);
+  transform: translateY(-2px);
+}
+.feature-icon {
+  width: 40px; height: 40px; border-radius: 8px;
+  background: rgba(167, 139, 250, 0.12);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+}
+.feature-icon svg { width: 20px; height: 20px; stroke: var(--accent-turnova); stroke-width: 1.6; fill: none; }
+.feature-title { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 8px; }
+.feature-desc { font-size: 14px; color: var(--pyralis-text-muted); line-height: 1.6; }
+
+/* STEPS */
+.steps { display: flex; flex-direction: column; gap: 16px; max-width: 800px; margin: 0 auto; }
+.step {
+  display: flex; gap: 24px; align-items: flex-start;
+  padding: 24px 28px;
+  background: var(--pyralis-surface);
+  border: 0.5px solid var(--pyralis-border);
+  border-radius: 14px;
+}
+.step-num {
+  flex-shrink: 0;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%);
+  color: #fff; font-weight: 700; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.step-content { flex: 1; }
+.step-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.step-desc { font-size: 14px; color: var(--pyralis-text-muted); line-height: 1.6; }
+.step-time { font-size: 11px; color: var(--pyralis-text-dim); font-family: monospace; letter-spacing: 0.04em; }
+
+/* PRICING */
+.pricing-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+.pricing-card {
+  background: var(--pyralis-surface);
+  border: 0.5px solid var(--pyralis-border);
+  border-radius: 16px;
+  padding: 32px 28px;
+  display: flex; flex-direction: column;
+  position: relative;
+}
+.pricing-card.featured {
+  border-color: rgba(167, 139, 250, 0.4);
+  background: linear-gradient(180deg, rgba(167, 139, 250, 0.04), var(--pyralis-surface));
+}
+.pricing-badge {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  background: var(--accent-turnova); color: #0A0F14;
+  padding: 4px 14px; border-radius: 999px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.pricing-name { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.pricing-tagline { font-size: 13px; color: var(--pyralis-text-muted); margin-bottom: 20px; }
+.pricing-price { display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px; }
+.pricing-price .amount { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; }
+.pricing-price .per { color: var(--pyralis-text-muted); font-size: 14px; }
+.pricing-note { font-size: 11px; color: var(--pyralis-text-dim); font-family: monospace; margin-bottom: 24px; }
+.pricing-cta {
+  display: block; text-align: center;
+  padding: 12px; border-radius: 8px;
+  font-size: 14px; font-weight: 600;
+  margin-bottom: 24px;
+  transition: background 0.15s;
+}
+.pricing-card .pricing-cta {
+  background: rgba(255, 255, 255, 0.04);
+  border: 0.5px solid var(--pyralis-border);
+}
+.pricing-card .pricing-cta:hover { background: rgba(255, 255, 255, 0.08); }
+.pricing-card.featured .pricing-cta {
+  background: var(--accent-turnova); color: #0A0F14;
+}
+.pricing-card.featured .pricing-cta:hover { background: #C4B5FD; }
+.pricing-features { display: flex; flex-direction: column; gap: 10px; }
+.pricing-features li {
+  font-size: 13px; color: var(--pyralis-text-muted);
+  padding-left: 22px; position: relative;
+}
+.pricing-features li::before {
+  content: ''; position: absolute; left: 0; top: 7px;
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--accent-turnova);
+  box-shadow: 0 0 8px var(--accent-turnova);
+}
+
+/* CTA FINAL */
+.cta-final {
+  text-align: center; padding: 100px 24px;
+  position: relative; z-index: 1;
+  border-top: 0.5px solid var(--pyralis-border);
+  background: linear-gradient(180deg, transparent, rgba(167, 139, 250, 0.04), transparent);
+}
+.cta-final h2 {
+  font-size: clamp(28px, 4vw, 38px); font-weight: 600;
+  letter-spacing: -0.025em; margin-bottom: 16px;
+}
+.cta-final p {
+  font-size: 17px; color: var(--pyralis-text-muted);
+  max-width: 520px; margin: 0 auto 28px;
+}
+
+/* FOOTER */
+.footer {
+  padding: 40px 24px; position: relative; z-index: 1;
+  border-top: 0.5px solid var(--pyralis-border);
+  text-align: center;
+  font-size: 13px; color: var(--pyralis-text-dim);
+}
+.footer .pyralis-link { color: var(--accent-turnova); font-weight: 500; }
+.footer .pyralis-link:hover { text-decoration: underline; }
+
+@media (max-width: 640px) {
+  .step { flex-direction: column; gap: 12px; padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- BG LAYERS -->
+<div class="bg-layer bg-grid"></div>
+<div class="bg-layer bg-glow"></div>
+<div class="bg-layer">
+  <span class="firefly"></span>
+  <span class="firefly"></span>
+  <span class="firefly"></span>
+  <span class="firefly"></span>
+  <span class="firefly"></span>
+  <span class="firefly"></span>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">
+      <svg width="32" height="32" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-label="Turnova by Pyralis">
+        <rect x="3" y="3" width="54" height="54" rx="13" fill="#0A0F14" stroke="#1F2937" stroke-width="0.8"/>
+        <path d="M14 14 L46 14 M30 14 L30 46" fill="none" stroke="#F1F5F9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="40" cy="34" r="9" fill="none" stroke="#F59E0B" stroke-width="0.6" opacity="0.4"/>
+        <circle cx="40" cy="34" r="4" fill="#F59E0B"/>
+        <circle cx="40" cy="34" r="1.8" fill="#FEF3C7"/>
+      </svg>
+      <span class="nav-brand-name">Turnova</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features" class="nav-link">Características</a>
+      <a href="#como" class="nav-link">Cómo funciona</a>
+      <a href="#precios" class="nav-link">Precios</a>
+      <a href="#contacto" class="nav-link">Contacto</a>
+      <a href="#contacto" class="nav-link nav-cta">Hablemos →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Pyralis · App de salud · v2026</div>
+
+  <h1 class="hero-wordmark">
+    Turn<span class="firefly-o">o</span>va
+  </h1>
+
+  <div class="hero-byline">
+    <span class="by-mark">—</span> BY <span class="by-mark">—</span>
+    <span class="pyralis">Pyralis</span>
+  </div>
+
+  <h2 class="hero-headline">
+    Cada turno,<br/>
+    <span class="accent">una nueva era.</span>
+  </h2>
+
+  <p class="hero-sub">
+    La IA que lee pedidos médicos por WhatsApp y asigna el turno por vos. Identifica obra social, práctica y urgencia. Respeta reglas VIP y cupos semanales. Integración BOTMAKER nativa.
+  </p>
+
+  <div class="hero-ctas">
+    <a href="#contacto" class="btn-primary">
+      Solicitar acceso
+      <span style="font-size: 18px; line-height: 1;">→</span>
+    </a>
+    <a href="#como" class="btn-ghost">Ver cómo funciona</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-value">95%</div>
+      <div class="stat-label">Precisión IA</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">32s</div>
+      <div class="stat-label">Por pedido</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">85%</div>
+      <div class="stat-label">Menos tiempo</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-eyebrow">Producto</div>
+      <h2>Cuatro motores<br/>trabajando juntos</h2>
+      <p class="section-subtitle">
+        No es un chatbot más. Es la capa de inteligencia que conecta tu WhatsApp con tu agenda médica.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 10v6M4.22 4.22l4.24 4.24m7.08 7.08l4.24 4.24M1 12h6m10 0h6M4.22 19.78l4.24-4.24m7.08-7.08l4.24-4.24"/></svg>
+        </div>
+        <h3 class="feature-title">Motor de extracción IA</h3>
+        <p class="feature-desc">Claude Sonnet 4.5 lee fotos y PDFs de pedidos médicos argentinos. Identifica práctica, obra social, médico solicitante, urgencia. 95% de precisión.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <h3 class="feature-title">Motor de reglas configurable</h3>
+        <p class="feature-desc">Obras sociales VIP reciben turno en 72hs. Las demás respetan cupos semanales. Vos definís las reglas. La IA las cumple.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </div>
+        <h3 class="feature-title">Integración BOTMAKER</h3>
+        <p class="feature-desc">Tu paciente sigue hablando con tu BOT habitual. Turnova procesa el pedido por detrás y devuelve el turno al instante.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3 class="feature-title">Multi-tenant + compliance</h3>
+        <p class="feature-desc">Cada centro médico es un tenant aislado. Supabase con encriptación at-rest. Cumple Ley 25.326 (Habeas Data) y BAA-ready.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3 class="feature-title">32 segundos por pedido</h3>
+        <p class="feature-desc">Desde foto del pedido a turno confirmado en menos de 1 minuto. Comparado con 3-8 min de asignación manual habitual.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h3 class="feature-title">Hecho en Argentina</h3>
+        <p class="feature-desc">Diseñado con la realidad de los centros argentinos: OSDE, Swiss Medical, PAMI, IOMA, OSECAC, nomenclador nacional, todo nativo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="como">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-eyebrow">Cómo funciona</div>
+      <h2>Del pedido al turno asignado<br/>en menos de 1 minuto</h2>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Llega el pedido por WhatsApp</div>
+          <div class="step-desc">El paciente manda foto del pedido médico al BOT del centro. BOTMAKER reenvía a Turnova vía webhook.</div>
+        </div>
+        <div class="step-time">instant</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">IA extrae la información</div>
+          <div class="step-desc">Claude Vision lee la foto: identifica práctica, obra social, médico solicitante, matrícula, urgencia. Devuelve JSON estructurado con 95% precisión.</div>
+        </div>
+        <div class="step-time">~12s</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Motor de reglas asigna turno</div>
+          <div class="step-desc">Si OS es VIP, busca cupo en menos de 72hs. Si no, asigna según matriz semanal. Crea hold de 10 min hasta confirmación.</div>
+        </div>
+        <div class="step-time">~1s</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Paciente confirma por WhatsApp</div>
+          <div class="step-desc">Recibe propuesta de turno con fecha, hora y sede. Confirma con un click. Listo.</div>
+        </div>
+        <div class="step-time">depende del paciente</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="precios">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-eyebrow">Precios</div>
+      <h2>Pagás por lo que procesás</h2>
+      <p class="section-subtitle">
+        Setup único + suscripción mensual según volumen. ROI positivo desde el primer mes — ahorrás 3-8 minutos por pedido en personal administrativo.
+      </p>
+    </div>
+
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pricing-name">Starter</div>
+        <div class="pricing-tagline">Centros chicos. Hasta 500 turnos/mes.</div>
+        <div class="pricing-price">
+          <span class="amount">$49</span><span class="per">/mes</span>
+        </div>
+        <div class="pricing-note">Setup USD 500 (one-time)</div>
+        <a href="#contacto" class="pricing-cta">Empezar</a>
+        <ul class="pricing-features">
+          <li>1 sede</li>
+          <li>Hasta 1.000 turnos/mes</li>
+          <li>Hasta 5 usuarios admin</li>
+          <li>Integración BOTMAKER</li>
+          <li>Soporte por email</li>
+        </ul>
+      </div>
+
+      <div class="pricing-card featured">
+        <div class="pricing-badge">Más elegido</div>
+        <div class="pricing-name">Pro</div>
+        <div class="pricing-tagline">El plan más usado. Centros medianos.</div>
+        <div class="pricing-price">
+          <span class="amount">$149</span><span class="per">/mes</span>
+        </div>
+        <div class="pricing-note">Setup USD 1.000 · Onboarding incluido</div>
+        <a href="#contacto" class="pricing-cta">Empezar</a>
+        <ul class="pricing-features">
+          <li>Hasta 3 sedes</li>
+          <li>Hasta 5.000 turnos/mes</li>
+          <li>Usuarios ilimitados</li>
+          <li>API + Webhooks</li>
+          <li>Dashboard ejecutivo</li>
+          <li>Soporte prioritario por WhatsApp</li>
+        </ul>
+      </div>
+
+      <div class="pricing-card">
+        <div class="pricing-name">Business</div>
+        <div class="pricing-tagline">Centros grandes. Cadenas multi-sede.</div>
+        <div class="pricing-price">
+          <span class="amount">$299</span><span class="per">/mes</span>
+        </div>
+        <div class="pricing-note">Setup USD 1.500 · Training presencial</div>
+        <a href="#contacto" class="pricing-cta">Empezar</a>
+        <ul class="pricing-features">
+          <li>Sedes ilimitadas</li>
+          <li>Hasta 15.000 turnos/mes</li>
+          <li>SLA 99,9%</li>
+          <li>Soporte 24/7</li>
+          <li>Consultoría de optimización</li>
+          <li>Custom integrations (HL7/FHIR)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final" id="contacto">
+  <h2>Probá Turnova en tu centro,<br/>gratis por 30 días</h2>
+  <p>Estamos eligiendo 10 centros para el piloto. Si te seleccionamos, onboarding gratuito y precio Founder por 12 meses.</p>
+  <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+    <a href="mailto:hola@pyralis.ar?subject=Quiero%20probar%20Turnova" class="btn-primary">
+      Solicitar demo
+      <span style="font-size: 18px; line-height: 1;">→</span>
+    </a>
+    <a href="https://wa.me/5491155550000?text=Hola,%20quiero%20saber%20sobre%20Turnova" class="btn-ghost">
+      WhatsApp directo
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>
+    Turnova es una app del ecosistema
+    <a href="https://santipitre.github.io/pyralis/" class="pyralis-link">Pyralis</a>
+    · © 2026
+  </p>
+</footer>
+
+</body>
+</html>
