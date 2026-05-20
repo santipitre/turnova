@@ -101,7 +101,9 @@ ul { list-style: none; }
 }
 .nav-brand { display: flex; align-items: center; gap: 10px; }
 .nav-brand svg { display: block; }
-.nav-brand-name { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.nav-brand-text { display: flex; flex-direction: column; gap: 2px; line-height: 1; }
+.nav-brand-name { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--pyralis-text); }
+.nav-brand-by { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--pyralis-text-dim); font-weight: 500; }
 .nav-links { display: flex; align-items: center; gap: 28px; }
 .nav-link {
   font-size: 13px; color: var(--pyralis-text-muted);
@@ -404,14 +406,17 @@ ul { list-style: none; }
 <nav class="nav">
   <div class="nav-inner">
     <a href="#" class="nav-brand">
-      <svg width="32" height="32" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-label="Turnova by Pyralis">
+      <svg width="36" height="36" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-label="Turnova by Pyralis">
         <rect x="3" y="3" width="54" height="54" rx="13" fill="#0A0F14" stroke="#1F2937" stroke-width="0.8"/>
         <path d="M14 14 L46 14 M30 14 L30 46" fill="none" stroke="#F1F5F9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
         <circle cx="40" cy="34" r="9" fill="none" stroke="#F59E0B" stroke-width="0.6" opacity="0.4"/>
         <circle cx="40" cy="34" r="4" fill="#F59E0B"/>
         <circle cx="40" cy="34" r="1.8" fill="#FEF3C7"/>
       </svg>
-      <span class="nav-brand-name">Turnova</span>
+      <span class="nav-brand-text">
+        <span class="nav-brand-name">Turnova</span>
+        <span class="nav-brand-by">By Pyralis</span>
+      </span>
     </a>
     <div class="nav-links">
       <a href="#features" class="nav-link">Características</a>
