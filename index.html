@@ -4,96 +4,49 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Turnova — Redirigiendo…</title>
-
-<!-- Redirect inmediato para browsers -->
 <meta http-equiv="refresh" content="0; url=https://turnova-app.vercel.app/" />
-
-<!-- Canonical: dice a Google que la URL real es la nueva -->
 <link rel="canonical" href="https://turnova-app.vercel.app/" />
-
-<!-- Si Google ya tenía indexada esta URL, que no se quede -->
 <meta name="robots" content="noindex, follow" />
-
-<!-- Favicon Pyralis -->
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-
-<!-- OG para previews en redes mientras la transición termina -->
 <meta property="og:title" content="Turnova — IA para turnos médicos" />
 <meta property="og:description" content="La inteligencia que falta entre tu chatbot y tu agenda." />
 <meta property="og:url" content="https://turnova-app.vercel.app/" />
 <meta property="og:type" content="website" />
-
 <style>
-:root {
-  color-scheme: dark;
-}
+:root { color-scheme: dark; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
   height: 100%;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   background: #0c0a09;
   color: #f5f5f4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 1.5rem;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 1.5rem;
 }
-.wrap {
-  max-width: 480px;
-}
+.wrap { max-width: 480px; }
 .dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #fbbf24;
-  box-shadow: 0 0 14px rgba(251, 191, 36, 0.9);
+  display: inline-block; width: 8px; height: 8px;
+  border-radius: 50%; background: #fbbf24;
+  box-shadow: 0 0 14px rgba(251,191,36,.9);
   margin-right: 8px;
   animation: pulse 1.4s ease-in-out infinite;
 }
 @keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.85); }
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:.5; transform:scale(.85); }
 }
-h1 {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 12px;
-}
-.o-glow {
-  color: #fbbf24;
-  text-shadow: 0 0 16px rgba(251, 191, 36, 0.85);
-}
-p {
-  color: #a8a29e;
-  font-size: 15px;
-  line-height: 1.6;
-  margin-bottom: 24px;
-}
+h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
+.o-glow { color: #fbbf24; text-shadow: 0 0 16px rgba(251,191,36,.85); }
+p { color: #a8a29e; font-size: 15px; line-height: 1.6; margin-bottom: 24px; }
 a.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #fbbf24;
-  color: #0c0a09;
-  font-weight: 600;
-  text-decoration: none;
-  padding: 12px 22px;
-  border-radius: 10px;
-  font-size: 15px;
-  box-shadow: 0 0 20px rgba(251, 191, 36, 0.35);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-a.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 28px rgba(251, 191, 36, 0.5);
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fbbf24; color: #0c0a09;
+  font-weight: 600; text-decoration: none;
+  padding: 12px 22px; border-radius: 10px; font-size: 15px;
+  box-shadow: 0 0 20px rgba(251,191,36,.35);
 }
 .muted {
-  color: #57534e;
-  font-size: 13px;
-  margin-top: 24px;
+  color: #57534e; font-size: 13px; margin-top: 24px;
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 </style>
@@ -101,17 +54,10 @@ a.btn:hover {
 <body>
 <div class="wrap">
   <h1><span class="dot"></span>Turn<span class="o-glow">o</span>va se mudó</h1>
-  <p>
-    La URL nueva es <strong style="color:#fbbf24;">turnova-app.vercel.app</strong>.<br />
-    Te estamos redirigiendo en un segundo…
-  </p>
-  <a class="btn" href="https://turnova-app.vercel.app/">
-    Entrar ahora →
-  </a>
+  <p>La URL nueva es <strong style="color:#fbbf24;">turnova-app.vercel.app</strong>.<br />Te estamos redirigiendo en un segundo…</p>
+  <a class="btn" href="https://turnova-app.vercel.app/">Entrar ahora →</a>
   <div class="muted">santipitre.github.io/turnova → turnova-app.vercel.app</div>
 </div>
-
-<!-- Fallback JS por si meta refresh está deshabilitado -->
 <script>
   setTimeout(function () {
     window.location.replace("https://turnova-app.vercel.app/");
