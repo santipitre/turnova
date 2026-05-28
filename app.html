@@ -1,40 +1,84 @@
 <!DOCTYPE html>
-<html lang="es-AR">
+<html lang="es">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Turnova · App by Pyralis</title>
-<meta name="description" content="Acceso a Turnova — Turnos médicos asignados por IA · by Pyralis" />
-<meta name="theme-color" content="#0A0F14" />
+<title>Turnova — Iniciando sesión…</title>
+
+<!-- Redirect inmediato al login real en Vercel -->
+<meta http-equiv="refresh" content="0; url=https://turnova-app.vercel.app/login" />
+
+<!-- Canonical: indica a Google que la URL real es la de Vercel -->
+<link rel="canonical" href="https://turnova-app.vercel.app/login" />
+
+<!-- No indexar (la URL canónica es la de Vercel) -->
+<meta name="robots" content="noindex, follow" />
 
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body {
-    background: #0A0F14;
-    color: #F1F5F9;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-weight: 400;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
-  a { color: inherit; text-decoration: none; }
-  button { font: inherit; background: none; border: none; color: inherit; cursor: pointer; }
+:root { color-scheme: dark; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #0c0a09;
+  color: #f5f5f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+}
+.wrap { max-width: 420px; }
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fbbf24;
+  box-shadow: 0 0 18px rgba(251, 191, 36, 0.95);
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.6); opacity: 0.4; }
+}
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 16px 0 8px;
+}
+p {
+  color: #a8a29e;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+a {
+  color: #fbbf24;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(251, 191, 36, 0.4);
+}
+a:hover { border-bottom-color: #fbbf24; }
 </style>
-
-<!-- Turnova Auth + App: SPA con vistas operativas (Pedidos, Cupos, Turnos, Catálogos, Centro)
-     Conectada a Supabase Lumen (schema turnova.*) via Accept-Profile header. -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<script src="turnova-auth.js?v=2" defer></script>
 </head>
 <body>
-<!-- El auth se inyecta como overlay full-screen al cargar.
-     Si no hay sesión → login. Si hay sesión → app con sidebar.
-     Vistas: dashboard, pedidos, turnos, cupos, catalogos, tenant -->
+<div class="wrap">
+  <span class="dot"></span>
+  <h1>Llevándote al login</h1>
+  <p>
+    El acceso ahora está en <a href="https://turnova-app.vercel.app/login">turnova-app.vercel.app/login</a>.
+  </p>
+</div>
+
+<script>
+  // Fallback JS si meta refresh está deshabilitado
+  setTimeout(function () {
+    window.location.replace("https://turnova-app.vercel.app/login");
+  }, 400);
+</script>
 </body>
 </html>
